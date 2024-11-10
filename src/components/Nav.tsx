@@ -9,7 +9,9 @@ export default function Nav() {
       {user.user ? (
         <>
           <NavLink to={"/votes"}>Votes</NavLink>
-          {user.user.isAdmin && (<NavLink to={"/statitics"}>Statistics</NavLink>)}
+          {user.user.isAdmin && (
+            <NavLink to={"/statistics"}>Statistics</NavLink>
+          )}
           <button onClick={() => alert("logout")}>Logout</button>
         </>
       ) : (
