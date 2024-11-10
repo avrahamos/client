@@ -1,14 +1,23 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { RootState, useAppSelector } from "../redux/store/store";
 
 export default function Nav() {
+  const user = useAppSelector((state: RootState) => state.user);
   return (
     <div className="nav">
-      <NavLink to={"/login"}>login</NavLink>
-      <NavLink to={"/register"}>register</NavLink>
-      <NavLink to={"/votes"}>votes</NavLink>
-      <NavLink to={"/statitics"}>statistics</NavLink>
-      <button onClick={() => alert("logout")}>logout</button>
+      {user.user ? (
+        <>
+          <NavLink to={"/votes"}>Votes</NavLink>
+          {user.user.isAdmin && (<NavLink to={"/statitics"}>Statistics</NavLink>)}
+          <button onClick={() => alert("logout")}>Logout</button>
+        </>
+      ) : (
+        <>
+          <NavLink to={"/login"}>Login</NavLink>
+          <NavLink to={"/register"}>Register</NavLink>
+        </>
+      )}
     </div>
   );
 }
