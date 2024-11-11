@@ -11,7 +11,7 @@ export default function Statistics() {
     if (user?._id && !user?.isAdmin) {
       navigate("/votes");
     }
-    if(!user._id)navigate('/login')
+    // if(!user._id)navigate('/login')
   }, []);
   return <div>Statistics</div>;
 }

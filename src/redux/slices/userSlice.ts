@@ -27,7 +27,7 @@ export const fetchLogin = createAsyncThunk(
       const data = await res.json();
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("authorization", data.token);
       }
 
       return data;
