@@ -25,6 +25,11 @@ export const fetchLogin = createAsyncThunk(
       }
 
       const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
       return data;
     } catch (error) {
       return thunkApi.rejectWithValue("Can't login, please try again");

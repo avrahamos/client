@@ -12,14 +12,22 @@ export const fetchCandidates = createAsyncThunk(
   "candidates/getList",
   async (_, thunkApi) => {
     try {
-      const res = await fetch("http://localhost:2222/api/candidates/");
-      if (res.status != 200) {
-        thunkApi.rejectWithValue("Can't get the list, please try again");
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:3000/api/candidates", {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status !== 200) {
+        return thunkApi.rejectWithValue("Can't get the list, please try again");
       }
       const data = await res.json();
-      thunkApi.fulfillWithValue(data);
+      return thunkApi.fulfillWithValue(data);
     } catch (err) {
-      thunkApi.rejectWithValue("Can't get the list, please try again");
+      return thunkApi.rejectWithValue("Can't get the list, please try again");
     }
   }
 );
