@@ -16,6 +16,12 @@ export default function Login() {
     }
     navigate("/votes");
   }, [user]);
+
+  useEffect(()=>{
+     if (user?._id) {
+       navigate("/login");
+     }
+  },[])
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(fetchLogin({ userName, password }));

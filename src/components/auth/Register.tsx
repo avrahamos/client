@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useAppDispatch } from "../../redux/store/store";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { fetchRegister } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
@@ -9,8 +9,14 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.user);
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user?._id) {
+      navigate("/votes");
+    }
+  }, []);
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await dispatch(

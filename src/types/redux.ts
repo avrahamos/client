@@ -8,6 +8,7 @@ export enum DataStatus {
   IDLE="IDLE"
 }
 export interface UserState {
+  isAdmin?: boolean;
   _id?: string;
   erorr: string | null;
   status: DataStatus;
