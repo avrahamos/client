@@ -33,6 +33,35 @@ export const fetchCandidates = createAsyncThunk(
   }
 );
 
+export const fetchStatistcs = createAsyncThunk( 
+  "admin/statistcs",
+   async(_,thunkApi)=>{
+    try {
+      const token = localStorage.getItem("authorization");
+
+      const res = await fetch("http://localhost:3000/api/admin/statistics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        
+      });
+      if(!res.ok){
+         const errorText = await res.text();
+         return thunkApi.rejectWithValue(`Server error: ${errorText}`);
+        
+      }
+       const data = await res.json();
+       return data;
+    } catch (error) {
+      return thunkApi.rejectWithValue(
+        "Can't get the statistcs, please try again"
+      );
+    }
+  });
+
+
+
 export const voteForCandidate = createAsyncThunk(
   "candidates/vote",
   async (candidateId: string, thunkApi) => {
