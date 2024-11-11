@@ -6,6 +6,7 @@ import {
 import { DataStatus, UserState } from "../../types/redux";
 import { IUser } from "../../types/users";
 import { initialData } from "../initialData/initialUser";
+import { json } from "express";
 
 export const fetchLogin = createAsyncThunk(
   "user/login",
@@ -62,14 +63,39 @@ export const fetchRegister = createAsyncThunk(
   }
 );
 
+export const fetchProfileUpdate = createAsyncThunk(
+  "user/profile",
+  async (id: string, thunkApi) => {
+    try {
+      const token = localStorage.getItem("authorization");
+
+      const res = await fetch("http://localhost:3000/api/users/profile", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body:JSON.stringify({id})
+        
+      });
+      if(!res.ok){
+        thunkApi.rejectWithValue("Can't update profile, please try again");
+      }
+      const data = await res.json()
+      return data
+    } catch (error) {
+      thunkApi.rejectWithValue("Can't login, please try again");
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: initialData,
   reducers: {
-    logOutUser: (state) =>
-       {
+    logOutUser: (state) => {
       state.user = null;
-       },
+    },
   },
   extraReducers: (builder: ActionReducerMapBuilder<UserState>) => {
     builder.addCase(fetchLogin.pending, (state) => {
@@ -90,5 +116,5 @@ const userSlice = createSlice({
   },
 });
 
-export const {logOutUser} =userSlice.actions
+export const { logOutUser } = userSlice.actions;
 export default userSlice;
