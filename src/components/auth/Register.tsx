@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import { fetchRegister } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
+import { fetchRegister } from "../../redux/slices/userSlice";
 
 export default function Register() {
   const [userName, setUserName] = useState("");

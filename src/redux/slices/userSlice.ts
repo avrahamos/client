@@ -6,7 +6,12 @@ import {
 import { DataStatus, UserState } from "../../types/redux";
 import { IUser } from "../../types/users";
 import { initialData } from "../initialData/initialUser";
-import { json } from "express";
+
+const initialState: UserState = {
+  erorr: null,
+  status: DataStatus.IDLE,
+  user: null,
+};
 
 export const fetchLogin = createAsyncThunk(
   "user/login",
@@ -14,9 +19,7 @@ export const fetchLogin = createAsyncThunk(
     try {
       const res = await fetch("http://localhost:3000/api/users/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
       });
 
@@ -26,11 +29,7 @@ export const fetchLogin = createAsyncThunk(
       }
 
       const data = await res.json();
-
-      if (data.token) {
-        localStorage.setItem("authorization", data.token);
-      }
-
+      if (data.token) localStorage.setItem("authorization", data.token);
       return data;
     } catch (error) {
       return thunkApi.rejectWithValue("Can't login, please try again");
@@ -53,12 +52,13 @@ export const fetchRegister = createAsyncThunk(
         body: JSON.stringify(user),
       });
       if (!res.ok) {
-        return thunkApi.rejectWithValue("Can't create, please try again");
+        const errorText = await res.text();
+        return thunkApi.rejectWithValue(`Error: ${errorText}`);
       }
       const data = await res.json();
       return data;
     } catch (error) {
-      return thunkApi.rejectWithValue("Can't create, please try again");
+      return thunkApi.rejectWithValue("Can't register, please try again");
     }
   }
 );
@@ -70,51 +70,75 @@ export const fetchProfileUpdate = createAsyncThunk(
       const token = localStorage.getItem("authorization");
 
       const res = await fetch("http://localhost:3000/api/users/profile", {
-        method: "post",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body:JSON.stringify({id})
-        
+        body: JSON.stringify({ id }),
       });
-      if(!res.ok){
-        thunkApi.rejectWithValue("Can't update profile, please try again");
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        return thunkApi.rejectWithValue(`Error: ${errorText}`);
       }
-      const data = await res.json()
-      return data
+
+      const data = await res.json();
+      return data;
     } catch (error) {
-      thunkApi.rejectWithValue("Can't login, please try again");
+      return thunkApi.rejectWithValue("Can't update profile, please try again");
     }
   }
 );
 
 const userSlice = createSlice({
   name: "user",
-  initialState: initialData,
+  initialState,
   reducers: {
     logOutUser: (state) => {
       state.user = null;
+      localStorage.removeItem("authorization");
     },
   },
   extraReducers: (builder: ActionReducerMapBuilder<UserState>) => {
-    builder.addCase(fetchLogin.pending, (state) => {
-      state.status = DataStatus.LOADING;
-      state.erorr = null;
-      state.user = null;
-    });
-    builder.addCase(fetchLogin.fulfilled, (state, action) => {
-      state.status = DataStatus.SUCCESS;
-      state.erorr = null;
-      state.user = action.payload as IUser;
-    });
-    builder.addCase(fetchLogin.rejected, (state, action) => {
-      state.status = DataStatus.FAILED;
-      state.erorr = action.error.message || "Failed to login";
-      state.user = null;
-    });
+    builder
+      .addCase(fetchLogin.pending, (state) => {
+        state.status = DataStatus.LOADING;
+        state.erorr = null;
+        state.user = null;
+      })
+      .addCase(fetchLogin.fulfilled, (state, action) => {
+        state.status = DataStatus.SUCCESS;
+        state.erorr = null;
+        state.user = action.payload as IUser;
+      })
+      .addCase(fetchLogin.rejected, (state, action) => {
+        state.status = DataStatus.FAILED;
+        state.erorr = action.payload as string;
+        state.user = null;
+      })
+      .addCase(fetchRegister.pending, (state) => {
+        state.status = DataStatus.LOADING;
+        state.erorr = null;
+      })
+      .addCase(fetchRegister.fulfilled, (state) => {
+        state.status = DataStatus.SUCCESS;
+        state.erorr = null;
+      })
+      .addCase(fetchRegister.rejected, (state, action) => {
+        state.status = DataStatus.FAILED;
+        state.erorr = action.payload as string;
+      })
+      .addCase(fetchProfileUpdate.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user = { ...state.user, ...action.payload } as IUser;
+        }
+      })
+      .addCase(fetchProfileUpdate.rejected, (state, action) => {
+        state.erorr = action.payload as string;
+      });
   },
 });
 
 export const { logOutUser } = userSlice.actions;
-export default userSlice;
+export default userSlice.reducer;

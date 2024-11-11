@@ -1,3 +1,4 @@
+// types/redux.ts
 import { ICandidate } from "./candidate";
 import { IUser } from "./users";
 
@@ -5,8 +6,9 @@ export enum DataStatus {
   LOADING = "LOADING",
   SUCCESS = "SUCCESS",
   FAILED = "FAILED",
-  IDLE="IDLE"
+  IDLE = "IDLE",
 }
+
 export interface UserState {
   isAdmin?: boolean;
   _id?: string;
@@ -19,4 +21,5 @@ export interface CandidateState {
   erorr: string | null;
   status: DataStatus;
   Candidate: ICandidate[] | null;
+  statistics: ICandidate[] | null; // הוספת שדה הסטטיסטיקות
 }
