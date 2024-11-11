@@ -65,7 +65,12 @@ export const fetchRegister = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState: initialData,
-  reducers: {},
+  reducers: {
+    logOutUser: (state) =>
+       {
+      state.user = null;
+       },
+  },
   extraReducers: (builder: ActionReducerMapBuilder<UserState>) => {
     builder.addCase(fetchLogin.pending, (state) => {
       state.status = DataStatus.LOADING;
@@ -85,4 +90,5 @@ const userSlice = createSlice({
   },
 });
 
+export const {logOutUser} =userSlice.actions
 export default userSlice;
