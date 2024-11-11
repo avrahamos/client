@@ -1,12 +1,21 @@
-import React, { useState } from "react";
-import { useAppDispatch } from "../../redux/store/store";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { fetchLogin } from "../../redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!user?._id) {
+      return;
+    }
+    navigate("/votes");
+  }, [user]);
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(fetchLogin({ userName, password }));

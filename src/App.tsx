@@ -1,6 +1,6 @@
 import React from "react";
 import Nav from "./components/Nav";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Statistics from "./components/Pages/Statistics";
@@ -11,7 +11,7 @@ export default function App() {
     <div>
       <Nav />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate to={"/votes"} />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="statistics" element={<Statistics />} />

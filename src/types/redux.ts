@@ -8,6 +8,7 @@ export enum DataStatus {
   IDLE="IDLE"
 }
 export interface UserState {
+  _id?: string;
   erorr: string | null;
   status: DataStatus;
   user: IUser | null;
